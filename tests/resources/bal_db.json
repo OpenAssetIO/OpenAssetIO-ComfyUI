@@ -1,0 +1,27 @@
+{
+  "entities": {
+    "image_file": {
+      "versions": [
+        {
+          "traits": {
+            "openassetio-mediacreation:usage.Entity": {},
+            "openassetio-mediacreation:twoDimensional.Image": {},
+            "openassetio-mediacreation:content.LocatableContent": {
+              "location": "file://${test_tmp_dir}/cat.png"
+            }
+          }
+        }
+      ]
+    },
+    "no_file": {
+      "versions": [
+        {
+          "traits": {
+            "openassetio-mediacreation:usage.Entity": {},
+            "openassetio-mediacreation:twoDimensional.Image": {}
+          }
+        }
+      ]
+    }
+  }
+}

@@ -17,8 +17,10 @@ readme = "README.md"
 license = { text = "Apache Software License 2.0" }
 requires-python = ">=3.10,<3.12"
 classifiers = []
-dependencies = []
-
+dependencies = [
+    "openassetio>=1.0.0",
+    "openassetio-mediacreation>=1.0.0a12"
+]
 
 [project.optional-dependencies]
 dev = [
@@ -28,6 +30,7 @@ dev = [
     "pre-commit", # runs linting on commit
     "pytest", # testing
     "ruff", # linting
+    "openassetio-manager-bal" # mock manager for testing
 ]
 
 [project.urls]
@@ -77,12 +80,37 @@ target-version = "py311"
 # Add rules to ban exec/eval
 [tool.ruff.lint]
 select = [
+    # See all rules here: https://docs.astral.sh/ruff/rules
     "S102", # exec-builtin
     "S307", # eval-used
     "W293",
-    "F", # The "F" series in Ruff stands for "Pyflakes" rules, which catch various Python syntax errors and undefined names.
-    # See all rules here: https://docs.astral.sh/ruff/rules/#pyflakes-f
+    # The "F" series in Ruff stands for "Pyflakes" rules, which catch
+    # various Python syntax errors and undefined names.
+    "F",
+    # pydocstyle
+    "D",
+    # pycodestyle
+    "E", "W",
+    # pylint
+    "PL"
+]
+
+ignore = [
+    # "One-line docstring should fit on one line" - i.e. expects
+    # """summary""", not """\nsummary\n""", which is inconsistent with
+    # other OpenAssetIO projects.
+    "D200",
+    # "1 blank line required between summary line and description" -
+    # triggers if the summary spans more than one line.
+    "D205"
 ]
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = "double"
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 72
+max-line-length = 99

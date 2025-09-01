@@ -1,0 +1,10 @@
+# openassetio-comfyui
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2025 The Foundry Visionmongers Ltd
+
+[manager]
+identifier = "org.openassetio.examples.manager.bal"
+
+[manager.settings]
+library_path = "${config_dir}/bal_db.json"
+simulated_query_latency_ms = 0
