@@ -1,4 +1,21 @@
 {
+  "managementPolicy": {
+    "read": {
+      "default": {
+        "openassetio-mediacreation:managementPolicy.Managed": {}
+      }
+    },
+    "write": {
+      "default": {
+        "openassetio-mediacreation:managementPolicy.Managed": {}
+      }
+    },
+    "managerDriven": {
+      "default": {
+        "openassetio-mediacreation:managementPolicy.Managed": {}
+      }
+    }
+  },
   "entities": {
     "image_file": {
       "versions": [
@@ -22,6 +39,27 @@
           }
         }
       ]
+    },
+    "new_image_file": {
+      "versions": [],
+      "overrideByAccess": {
+        "write": {
+          "traits": {
+            "openassetio-mediacreation:usage.Entity": {},
+            "openassetio-mediacreation:twoDimensional.Image": {},
+            "openassetio-mediacreation:twoDimensional.PixelBased": {},
+            "openassetio-mediacreation:twoDimensional.Planar": {},
+            "openassetio-mediacreation:content.LocatableContent": {}
+          }
+        },
+        "managerDriven": {
+          "traits": {
+            "openassetio-mediacreation:content.LocatableContent": {
+              "location": "file://${test_tmp_dir}/dog.png"
+            }
+          }
+        }
+      }
     }
   }
 }

@@ -19,7 +19,9 @@ import pytest
 import torch
 from PIL import Image
 
-from openassetio_comfyui.nodes import ResolveImage, _OpenAssetIOHost
+from openassetio_comfyui.nodes import ResolveImage, _OpenAssetIOHost, PublishImage
+
+import folder_paths
 
 
 class Test_ResolveImage_init:
@@ -131,6 +133,102 @@ class Test_ResolveImage_resolve_image:
             resolve_image_node.resolve_image("bal:///image_file")
 
 
+class Test_PublishImage_init:
+    """
+    Test that the node can be instantiated.
+    """
+
+    def test_has_correct_type(self, publish_image_node):
+        assert isinstance(publish_image_node, PublishImage)
+
+
+class Test_PublishImage_constants:
+    """
+    Test the node's metadata.
+    """
+
+    def test_has_expected_values(self):
+        assert PublishImage.DESCRIPTION == "Publishes images to an asset manager."
+        assert PublishImage.CATEGORY == "image"
+        assert PublishImage.FUNCTION == "publish_images"
+        assert PublishImage.RETURN_TYPES == tuple()
+        assert PublishImage.OUTPUT_NODE is True
+
+    def test_function_matches(self):
+        assert inspect.isfunction(getattr(PublishImage, PublishImage.FUNCTION))
+
+
+class Test_PublishImage_INPUT_TYPES:
+    def test_has_expected_structure(self):
+        input_types = PublishImage.INPUT_TYPES()
+        assert input_types == {
+            "required": {
+                "entity_reference": (
+                    "STRING",
+                    {"multiline": False, "tooltip": "The entity to publish to"},
+                ),
+                "images": ("IMAGE", {"tooltip": "The images to save."}),
+            },
+            "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+        }
+
+
+class Test_PublishImage_VALIDATE_INPUTS:
+    def test_when_is_a_reference_then_returns_true(self):
+        valid = PublishImage.VALIDATE_INPUTS("bal:///")
+        assert valid
+
+    def test_when_not_a_reference_then_returns_false(self):
+        valid = PublishImage.VALIDATE_INPUTS("notbal:///")
+        assert not valid
+
+    def test_when_no_manager_found_then_raises(self, assert_raises_missing_manager):
+        with assert_raises_missing_manager():
+            PublishImage.VALIDATE_INPUTS("bal:///")
+
+
+class Test_PublishImage_publish_images:
+    def test_when_valid_reference_then_writes_image(
+        self, publish_image_node, image_file_path, image_file_tensor
+    ):
+        publish_image_node.publish_images("bal:///new_image_file", image_file_tensor)
+
+        new_image_file_path = image_file_path.with_name("dog.png")  # See bal_db.json
+        assert new_image_file_path.exists()
+
+    def test_when_valid_reference_then_provides_preview_of_result(
+        self, publish_image_node, image_file_tensor, tmp_path
+    ):
+        expected_ui_desc = {
+            "ui": {
+                "images": [
+                    {
+                        "type": "temp",
+                        "subfolder": "",
+                        "filename": "dog.png",  # See bal_db.json
+                    }
+                ]
+            }
+        }
+        actual_ui_desc = publish_image_node.publish_images(
+            "bal:///new_image_file", image_file_tensor
+        )
+
+        assert expected_ui_desc == actual_ui_desc
+
+        published_file_path = tmp_path / "dog.png"
+        ui_file_path = pathlib.Path(folder_paths.get_temp_directory()) / "dog.png"
+
+        assert ui_file_path != published_file_path  # Confidence check.
+        assert ui_file_path.read_bytes() == published_file_path.read_bytes()  # i.e. copied.
+
+    def test_when_no_manager_found_then_raises(
+        self, publish_image_node, assert_raises_missing_manager
+    ):
+        with assert_raises_missing_manager():
+            publish_image_node.publish_images("bal:///new_image_file", torch.zeros((1, 2, 2, 3)))
+
+
 @pytest.fixture
 def assert_raises_missing_manager(monkeypatch):
     """
@@ -154,6 +252,17 @@ def assert_raises_missing_manager(monkeypatch):
             yield
 
     return assert_ctx
+
+
+@pytest.fixture
+def image_file_tensor(resolve_image_node, image_file_path):
+    """
+    Fixture to provide a tensor representation of the input image file.
+    """
+    # Short-cut making use of ResolveImage node to get a tensor with
+    # expected structure.
+    images, _ = resolve_image_node.resolve_image("bal:///image_file")
+    return images
 
 
 @pytest.fixture
@@ -185,11 +294,33 @@ def image_file_path(monkeypatch, tmp_path):
 
 
 @pytest.fixture
+def publish_image_node():
+    """
+    Fixture to create a PublishImage node instance.
+    """
+    return PublishImage()
+
+
+@pytest.fixture
 def resolve_image_node():
     """
     Fixture to create an ResolveImage node instance.
     """
     return ResolveImage()
+
+
+@pytest.fixture(autouse=True)
+def set_comfyui_temp_dir(tmp_path_factory):
+    """
+    Override default ComfyUI temp directory to a location we control.
+
+    We do this because:
+    * ComfyUI's default temp directory (a top-level "temp" directory
+      under the ComfyUI repo) doesn't exist during test runs.
+    * We would like to ensure cleanup when the test completes.
+    """
+    tmp_dir = tmp_path_factory.mktemp("temp")
+    folder_paths.set_temp_directory(str(tmp_dir))
 
 
 @pytest.fixture(autouse=True)
