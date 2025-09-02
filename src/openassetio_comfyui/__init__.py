@@ -1,3 +1,7 @@
+# openassetio-comfyui
+# Copyright (c) 2025 The Foundry Visionmongers Ltd
+# SPDX-License-Identifier: Apache-2.0
+
 """Top-level package for openassetio-comfyui."""
 
 __all__ = [
