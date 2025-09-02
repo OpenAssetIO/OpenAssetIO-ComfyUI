@@ -70,7 +70,7 @@ disable_error_code = "attr-defined"
 
 [tool.ruff]
 # extend-exclude = ["static", "ci/templates"]
-line-length = 140
+line-length = 99
 src = ["src", "tests"]
 target-version = "py311"
 
