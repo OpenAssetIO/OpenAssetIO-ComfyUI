@@ -1,88 +1,112 @@
 # OpenAssetIO-ComfyUI
 
-OpenAssetIO ingress and egress
+## What
 
-> [!NOTE]
-> This projected was created with
-> a [cookiecutter](https://github.com/Comfy-Org/cookiecutter-comfy-extension) template. It helps you
-> start
-> writing custom nodes without worrying about the Python setup.
+Custom [ComfyUI](https://comfy.org) nodes for resolving and publishing
+assets directly from a workflow via
+[OpenAssetIO](https://docs.openassetio.org/OpenAssetIO/).
 
-## Quickstart
+## Why
 
-1. Install [ComfyUI](https://docs.comfy.org/get_started).
-1. Install [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager)
-1. Look up this extension in ComfyUI-Manager. If you are installing manually, clone this repository
-   under `ComfyUI/custom_nodes`.
-1. Restart ComfyUI.
+This project allows ComfyUI to leverage the abilities of
+OpenAssetIO-enabled asset management systems, such as versioning,
+dependency tracking, and collaboration.
 
-# Features
+For example, if the asset manager supports a meta-version of "latest",
+then the workflow inputs can be updated without having to edit the
+workflow or move files around.
 
-- A list of features
+Then, when the workflow completes, the output can be published back to
+the asset manager, which typically creates a new version/revision
+(rather than overwriting), and makes the output available for review and
+for use by downstream tools.
 
-## Develop
+## Features
 
-To install the dev dependencies and pre-commit (will run the ruff hook), do:
+- _OpenAssetIO Resolve Image_: An alternative to the built-in
+  _Load Image_ node that resolves an OpenAssetIO entity reference to an
+  image.
+
+- _OpenAssetIO Publish Image_: An alternative to the built-in _Save
+  Image_ node that publishes the output of a workflow to an OpenAssetIO
+  entity reference.
+
+## Requirements
+
+The plugin is known to work with
+
+- Python 3.11
+- [ComfyUI](https://comfy.org) 0.3.57
+- [OpenAssetIO](https://github.com/OpenAssetIO/OpenAssetIO) 1.0.0
+- [OpenAssetIO-MediaCreation](https://github.com/OpenAssetIO/OpenAssetIO-MediaCreation)
+  1.0.0-alpha.12
+
+## Installation
+
+Install [ComfyUI](https://docs.comfy.org/get_started).
+
+Clone this repository under `ComfyUI/custom_nodes`.
+
+From the repository root, install dependencies
+
+```
+pip install -r requirements.txt
+```
+
+Ensure the ComfyUI execution environment is configured correctly for an
+OpenAssetIO host application. See the
+[OpenAssetIO documentation](https://docs.openassetio.org/OpenAssetIO/runtime_configuration.html)
+for general instructions on host application configuration.
+
+In particular, ensure the `OPENASSETIO_DEFAULT_CONFIG` environment
+variable contains a path to a valid OpenAssetIO configuration file.
+
+## Development
+
+To install the dev dependencies and pre-commit (will run the
+[Ruff](https://docs.astral.sh/ruff/) hook), from the repository root run
 
 ```bash
-cd openassetio-comfyui
 pip install -e .[dev]
 pre-commit install
 ```
 
-The `-e` flag above will result in a "live" install, in the sense that any changes you make to your
-node extension will automatically be
-picked up the next time you run ComfyUI.
+> Note that installing this project to the Python environment has no
+> effect on ComfyUI, since it loads plugins from the `custom_nodes`
+> directory. However, installing the package helps with IDE code
+> completion and linting; and of course ensures test/lint dependencies
+> are installed.
 
-## Publish to Github
+### Running Tests
 
-Install Github Desktop or follow
-these [instructions](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
-for ssh.
+This project contains unit tests written in
+[pytest](https://docs.pytest.org/en/stable/) in the `tests` directory.
+To run the tests, from the repository root run
 
-1. Create a Github repository that matches the directory name.
-2. Push the files to Git
-
-```
-git add .
-git commit -m "project scaffolding"
-git push
+```bash
+pytest tests
 ```
 
-## Writing custom nodes
+### Linting
 
-An example custom node is located in [node.py](src/openassetio-comfyui/nodes.py). To learn more,
-read
-the [docs](https://docs.comfy.org/essentials/custom_node_overview).
+The project makes use of the [Ruff](https://docs.astral.sh/ruff/)
+linter, configured through the `pyproject.toml` file. To run Ruff, from
+the repository root run
 
-## Tests
+```bash
+ruff check .
+```
 
-This repo contains unit tests written in Pytest in the `tests/` directory. It is recommended to
-unit test your custom node.
+## License
 
-- [build-pipeline.yml](.github/workflows/build-pipeline.yml) will run pytest and linter on any open
-  PRs
-- [validate.yml](.github/workflows/validate.yml) will
-  run [node-diff](https://github.com/Comfy-Org/node-diff) to check for breaking changes
+Apache-2.0 - See [LICENSE](./LICENSE) file for details.
 
-## Publishing to Registry
+## Contributing
 
-If you wish to share this custom node with others in the community, you can publish it to the
-registry. We've already auto-populated some
-fields in `pyproject.toml` under `tool.comfy`, but please double-check that they are correct.
+Please feel free to contribute pull requests or issues. Note that
+contributions will require signing a CLA.
 
-You need to make an account on https://registry.comfy.org and create an API key token.
-
-- [ ] Go to the [registry](https://registry.comfy.org). Login and create a publisher id (everything
-  after the `@` sign on your registry
-  profile).
-- [ ] Add the publisher id into the pyproject.toml file.
-- [ ] Create an api key on the Registry for publishing from
-  Github. [Instructions](https://docs.comfy.org/registry/publishing#create-an-api-key-for-publishing).
-- [ ] Add it to your Github Repository Secrets as `REGISTRY_ACCESS_TOKEN`.
-
-A Github action will run on every git push. You can also run the Github action manually. Full
-instructions [here](https://docs.comfy.org/registry/publishing). Join
-our [discord](https://discord.com/invite/comfyorg) if you have any
-questions!
-
+See the OpenAssetIO contribution docs for how to structure
+[commit messages](https://github.com/OpenAssetIO/OpenAssetIO/blob/main/doc/contributing/COMMITS.md),
+the [pull request process](https://github.com/OpenAssetIO/OpenAssetIO/blob/main/doc/contributing/PULL_REQUESTS.md),
+and [coding style guide](https://github.com/OpenAssetIO/OpenAssetIO/blob/main/doc/contributing/CODING_STYLE.md).
