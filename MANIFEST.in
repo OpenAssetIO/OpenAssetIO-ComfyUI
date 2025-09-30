@@ -1,0 +1,13 @@
+# openassetio-comfyui
+# Copyright (c) 2025 The Foundry Visionmongers Ltd
+# SPDX-License-Identifier: Apache-2.0
+
+include LICENSE
+include README.md
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+
+recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif
+
+

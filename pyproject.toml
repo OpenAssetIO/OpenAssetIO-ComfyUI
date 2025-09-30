@@ -1,0 +1,116 @@
+# openassetio-comfyui
+# Copyright (c) 2025 The Foundry Visionmongers Ltd
+# SPDX-License-Identifier: Apache-2.0
+
+[build-system]
+requires = ["setuptools>=70.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openassetio-comfyui"
+version = "1.0.0"
+description = "ComfyUI custom nodes adding asset resolution and publishing via OpenAssetIO"
+authors = [
+    { name = "Contributors to the OpenAssetIO project", email = "openassetio-discussion@lists.aswf.io" }
+]
+readme = "README.md"
+license = { text = "Apache Software License 2.0" }
+requires-python = ">=3.10,<3.12"
+classifiers = []
+dependencies = [
+    "openassetio>=1.0.0",
+    "openassetio-mediacreation>=1.0.0a12"
+]
+
+[project.optional-dependencies]
+dev = [
+    "bump-my-version",
+    "coverage", # testing
+    "mypy", # linting
+    "pre-commit", # runs linting on commit
+    "pytest", # testing
+    "ruff", # linting
+    "openassetio-manager-bal" # mock manager for testing
+]
+
+[project.urls]
+Repository = "https://github.com/OpenAssetIO/OpenAssetIO-ComfyUI"
+BugTracker = "https://github.com/OpenAssetIO/OpenAssetIO-ComfyUI/issues"
+Documentation = "https://github.com/OpenAssetIO/OpenAssetIO-ComfyUI/wiki"
+
+
+[tool.comfy]
+PublisherId = "OpenAssetIO"
+DisplayName = "OpenAssetIO"
+Icon = ""
+Tags = []
+Repository = "https://github.com/OpenAssetIO/OpenAssetIO-ComfyUI"
+
+includes = []
+
+[tool.setuptools.package-data]
+"*" = ["*.*"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = [
+    "tests",
+]
+
+[tool.mypy]
+files = "."
+
+# Use strict defaults
+strict = true
+warn_unreachable = true
+warn_no_return = true
+
+[[tool.mypy.overrides]]
+# Don't require test functions to include types
+module = "tests.*"
+allow_untyped_defs = true
+disable_error_code = "attr-defined"
+
+[tool.ruff]
+# extend-exclude = ["static", "ci/templates"]
+line-length = 99
+src = ["src", "tests"]
+target-version = "py311"
+
+# Add rules to ban exec/eval
+[tool.ruff.lint]
+select = [
+    # See all rules here: https://docs.astral.sh/ruff/rules
+    "S102", # exec-builtin
+    "S307", # eval-used
+    "W293",
+    # The "F" series in Ruff stands for "Pyflakes" rules, which catch
+    # various Python syntax errors and undefined names.
+    "F",
+    # pydocstyle
+    "D",
+    # pycodestyle
+    "E", "W",
+    # pylint
+    "PL"
+]
+
+ignore = [
+    # "One-line docstring should fit on one line" - i.e. expects
+    # """summary""", not """\nsummary\n""", which is inconsistent with
+    # other OpenAssetIO projects.
+    "D200",
+    # "1 blank line required between summary line and description" -
+    # triggers if the summary spans more than one line.
+    "D205"
+]
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "double"
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 72
+max-line-length = 99

@@ -1,0 +1,34 @@
+# openassetio-comfyui
+# Copyright (c) 2025 The Foundry Visionmongers Ltd
+# SPDX-License-Identifier: Apache-2.0
+
+# http://editorconfig.org
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+charset = utf-8
+end_of_line = lf
+max_line_length = 99
+# For docstrings and comments.
+ij_visual_guides = 72
+
+[*.bat]
+indent_style = tab
+end_of_line = crlf
+
+[LICENSE]
+insert_final_newline = false
+
+[Makefile]
+indent_style = tab
+
+[{*.yml,*.yaml}]
+indent_size = 2
+
+[*.json]
+indent_size = 2

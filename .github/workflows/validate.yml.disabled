@@ -1,0 +1,18 @@
+# openassetio-comfyui
+# Copyright (c) 2025 The Foundry Visionmongers Ltd
+# SPDX-License-Identifier: Apache-2.0
+
+# TODO(DF): Re-enable once initial PR merged to set a baseline.
+name: Validate backwards compatibility
+
+on:
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: comfy-org/node-diff@main
