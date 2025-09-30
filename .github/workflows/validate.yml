@@ -14,4 +14,34 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
+      # We cannot simply run the node-diff action, since it will try
+      # to import our package without installing dependencies. So we
+      # install dependencies ourselves first.
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"  # Same as comfy-org/node-diff
+
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          path: pr_repo  # Same as comfy-org/node-diff
+
+      - uses: actions/checkout@v4
+        name: Checkout ComfyUI
+        with:
+          repository: comfyanonymous/ComfyUI
+          ref: v0.3.57
+          path: comfyui
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install ./pr_repo
+          pip install -r ./comfyui/requirements.txt
+
       - uses: comfy-org/node-diff@main
+        env:
+          PYTHONPATH: ${{ github.workspace }}/comfyui
